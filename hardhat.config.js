@@ -4,7 +4,7 @@ import { config as dotenvConfig } from "dotenv";
 
 dotenvConfig();
 
-module.exports = {
+export default {
   solidity: {
     version: "0.8.19",
     settings: {
