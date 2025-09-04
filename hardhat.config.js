@@ -1,8 +1,6 @@
-import "@nomicfoundation/hardhat-ethers";
-import "@nomicfoundation/hardhat-chai-matchers";
-import { config as dotenvConfig } from "dotenv";
-
-dotenvConfig();
+require("@nomicfoundation/hardhat-ethers");
+require("@nomicfoundation/hardhat-chai-matchers");
+require("dotenv").config();
 
 export default {
   solidity: {
