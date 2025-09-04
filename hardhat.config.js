@@ -2,7 +2,7 @@ require("@nomicfoundation/hardhat-ethers");
 require("@nomicfoundation/hardhat-chai-matchers");
 require("dotenv").config();
 
-export default {
+module.exports = {
   solidity: {
     version: "0.8.19",
     settings: {
