@@ -1,0 +1,35 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.4",
+    "@nomicfoundation/hardhat-ignition-ethers": "^3.0.2",
+    "@nomicfoundation/hardhat-network-helpers": "^3.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomicfoundation/hardhat-verify": "^3.0.1",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@typechain/hardhat": "^9.1.0",
+    "chai": "^6.0.1",
+    "circomlib": "^2.0.5",
+    "dotenv": "^17.2.2",
+    "ethers": "^6.7.1",
+    "hardhat": "^2.19.0",
+    "hardhat-deploy": "^1.0.4",
+    "hardhat-gas-reporter": "^2.3.0",
+    "snarkjs": "^0.7.5",
+    "solidity-coverage": "^0.8.16",
+    "typechain": "^8.3.2"
+  }
+}
