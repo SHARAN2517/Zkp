@@ -25,7 +25,7 @@
     "circomlib": "^2.0.5",
     "dotenv": "^17.2.2",
     "ethers": "^6.15.0",
-    "hardhat": "^3.0.4",
+    "hardhat": "^2.19.0",
     "hardhat-deploy": "^1.0.4",
     "hardhat-gas-reporter": "^2.3.0",
     "snarkjs": "^0.7.5",
