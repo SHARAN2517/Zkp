@@ -387,6 +387,44 @@ function Dashboard({ user, onLogout }) {
     return requiredRoles.includes(user.role);
   };
 
+  // Role-specific access control
+  const rolePermissions = {
+    admin: {
+      canManageDevices: true,
+      canViewSecurity: true,
+      canViewMLInsights: true,
+      canSimulateThreats: true,
+      canRegisterDevices: true,
+      canViewThreatPredictions: true,
+      canViewAnalytics: true,
+      canManageUsers: true
+    },
+    security_analyst: {
+      canManageDevices: false,
+      canViewSecurity: true,
+      canViewMLInsights: true,
+      canSimulateThreats: true,
+      canRegisterDevices: false,
+      canViewThreatPredictions: true,
+      canViewAnalytics: true,
+      canManageUsers: false
+    },
+    device_manager: {
+      canManageDevices: true,
+      canViewSecurity: false,
+      canViewMLInsights: false,
+      canSimulateThreats: false,
+      canRegisterDevices: true,
+      canViewThreatPredictions: false,
+      canViewAnalytics: false,
+      canManageUsers: false
+    }
+  };
+
+  const hasPermission = (permission) => {
+    return rolePermissions[user.role]?.[permission] || false;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black text-white">
       {/* Header */}
