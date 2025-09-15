@@ -283,7 +283,7 @@ function Dashboard({ user, onLogout }) {
 
   const fetchThreatPredictions = async () => {
     try {
-      if (user.role === 'admin' || user.role === 'security_analyst') {
+      if (hasPermission('canViewThreatPredictions')) {
         const response = await axios.get(`${API}/ml/predictions`);
         setThreatPredictions(response.data);
       }
@@ -294,8 +294,10 @@ function Dashboard({ user, onLogout }) {
 
   const fetchMLInsights = async () => {
     try {
-      const response = await axios.get(`${API}/ml/insights`);
-      setMlInsights(response.data);
+      if (hasPermission('canViewMLInsights')) {
+        const response = await axios.get(`${API}/ml/insights`);
+        setMlInsights(response.data);
+      }
     } catch (error) {
       console.error("Error fetching ML insights:", error);
     }
