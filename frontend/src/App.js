@@ -991,78 +991,86 @@ function Dashboard({ user, onLogout }) {
             </div>
           </TabsContent>
 
-          {/* Security Tab */}
-          <TabsContent value="security" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Authentication Logs */}
-              <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Authentication Logs</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {authLogs.map((log) => (
-                      <div key={log.id} className="flex items-center justify-between p-3 border border-gray-700 rounded-lg bg-gray-700/20">
-                        <div>
-                          <p className="font-medium text-white">{log.device_name}</p>
-                          <p className="text-xs text-gray-400">
-                            {new Date(log.timestamp).toLocaleString()} • {log.auth_method}
-                          </p>
-                          <p className="text-xs text-orange-400">
-                            Risk Score: {Math.round(log.risk_score * 100)}%
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          {log.success ? (
-                            <CheckCircle className="h-4 w-4 text-green-400" />
-                          ) : (
-                            <XCircle className="h-4 w-4 text-red-400" />
-                          )}
-                          {log.privacy_preserved && (
-                            <Badge className="bg-blue-500/20 text-blue-400 text-xs">
-                              Private
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Security Events */}
-              <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Security Events</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {securityEvents.map((event) => (
-                      <div key={event.id} className="p-3 border border-gray-700 rounded-lg bg-gray-700/20">
-                        <div className="flex items-center justify-between mb-2">
+          {/* Security Tab - Admin and Security Analyst only */}
+          {hasPermission('canViewSecurity') && (
+            <TabsContent value="security" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Authentication Logs */}
+                <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Authentication Logs</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Security analyst view of authentication events
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {authLogs.map((log) => (
+                        <div key={log.id} className="flex items-center justify-between p-3 border border-gray-700 rounded-lg bg-gray-700/20">
+                          <div>
+                            <p className="font-medium text-white">{log.device_name}</p>
+                            <p className="text-xs text-gray-400">
+                              {new Date(log.timestamp).toLocaleString()} • {log.auth_method}
+                            </p>
+                            <p className="text-xs text-orange-400">
+                              Risk Score: {Math.round(log.risk_score * 100)}%
+                            </p>
+                          </div>
                           <div className="flex items-center space-x-2">
-                            <Badge className={getThreatLevelColor(event.severity)}>
-                              {event.severity}
-                            </Badge>
-                            {event.ml_predicted && (
+                            {log.success ? (
+                              <CheckCircle className="h-4 w-4 text-green-400" />
+                            ) : (
+                              <XCircle className="h-4 w-4 text-red-400" />
+                            )}
+                            {log.privacy_preserved && (
                               <Badge className="bg-blue-500/20 text-blue-400 text-xs">
-                                ML Predicted
+                                Private
                               </Badge>
                             )}
                           </div>
-                          <span className="text-xs text-gray-400">
-                            {new Date(event.timestamp).toLocaleString()}
-                          </span>
                         </div>
-                        <p className="text-sm text-gray-300">{event.description}</p>
-                        <p className="text-xs text-gray-400 mt-1">Event: {event.event_type}</p>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Security Events */}
+                <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Security Events</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      ML-enhanced threat detection and security incidents
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {securityEvents.map((event) => (
+                        <div key={event.id} className="p-3 border border-gray-700 rounded-lg bg-gray-700/20">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center space-x-2">
+                              <Badge className={getThreatLevelColor(event.severity)}>
+                                {event.severity}
+                              </Badge>
+                              {event.ml_predicted && (
+                                <Badge className="bg-blue-500/20 text-blue-400 text-xs">
+                                  ML Predicted
+                                </Badge>
+                              )}
+                            </div>
+                            <span className="text-xs text-gray-400">
+                              {new Date(event.timestamp).toLocaleString()}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-300">{event.description}</p>
+                          <p className="text-xs text-gray-400 mt-1">Event: {event.event_type}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          )}
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
