@@ -450,7 +450,7 @@ function Dashboard({ user, onLogout }) {
                 </Badge>
               </div>
               
-              {canAccessFeature(['admin', 'security_analyst']) && (
+              {hasPermission('canSimulateThreats') && (
                 <Button onClick={simulateThreat} variant="outline" className="border-red-500/30 text-red-400 hover:bg-red-500/10">
                   <AlertTriangle className="h-4 w-4 mr-2" />
                   Simulate Threat
