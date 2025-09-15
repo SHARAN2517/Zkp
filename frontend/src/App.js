@@ -1072,90 +1072,102 @@ function Dashboard({ user, onLogout }) {
             </TabsContent>
           )}
 
-          {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Authentication Methods</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-300">Zero-Knowledge Proof</span>
-                      <span className="font-semibold text-green-400">
-                        {authLogs.filter(log => log.auth_method === "zero_knowledge" || log.auth_method === "multi_factor_zkp").length}
-                      </span>  
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-300">Traditional</span>
-                      <span className="font-semibold text-blue-400">
-                        {authLogs.filter(log => log.auth_method === "traditional").length}
-                      </span>
-                    </div>
-                    <Progress 
-                      value={
-                        authLogs.length > 0 
-                          ? (authLogs.filter(log => log.auth_method === "zero_knowledge" || log.auth_method === "multi_factor_zkp").length / authLogs.length) * 100
-                          : 0
-                      } 
-                      className="h-2"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Device Types</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {["smart_home", "healthcare", "industrial", "wearable", "sensor"].map(type => (
-                      <div key={type} className="flex justify-between items-center">
-                        <span className="text-sm text-gray-300 capitalize">{type.replace('_', ' ')}</span>
-                        <span className="font-semibold text-white">
-                          {devices.filter(device => device.device_type === type).length}
+          {/* Analytics Tab - Admin and Security Analyst only */}
+          {hasPermission('canViewAnalytics') && (
+            <TabsContent value="analytics" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Authentication Methods</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-300">Zero-Knowledge Proof</span>
+                        <span className="font-semibold text-green-400">
+                          {authLogs.filter(log => log.auth_method === "zero_knowledge" || log.auth_method === "multi_factor_zkp").length}
+                        </span>  
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-300">Traditional</span>
+                        <span className="font-semibold text-blue-400">
+                          {authLogs.filter(log => log.auth_method === "traditional").length}
                         </span>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      <Progress 
+                        value={
+                          authLogs.length > 0 
+                            ? (authLogs.filter(log => log.auth_method === "zero_knowledge" || log.auth_method === "multi_factor_zkp").length / authLogs.length) * 100
+                            : 0
+                        } 
+                        className="h-2"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
 
-              <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">System Health</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-300">Uptime</span>
-                      <Badge className="bg-green-500/20 text-green-400">99.9%</Badge>
+                <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Threat Analysis</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-300">ML Predictions</span>
+                        <span className="font-semibold text-blue-400">
+                          {dashboardStats.ml_predictions_today || 0}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-300">Anomalies</span>
+                        <span className="font-semibold text-orange-400">
+                          {dashboardStats.anomalies_detected || 0}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-300">High Risk Events</span>
+                        <span className="font-semibold text-red-400">
+                          {securityEvents.filter(event => event.severity === 'high' || event.severity === 'critical').length}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-300">ZKP Success Rate</span>
-                      <Badge className="bg-blue-500/20 text-blue-400">
-                        {authLogs.filter(log => (log.auth_method === "zero_knowledge" || log.auth_method === "multi_factor_zkp") && log.success).length > 0 
-                          ? Math.round((authLogs.filter(log => (log.auth_method === "zero_knowledge" || log.auth_method === "multi_factor_zkp") && log.success).length / authLogs.filter(log => log.auth_method === "zero_knowledge" || log.auth_method === "multi_factor_zkp").length) * 100)
-                          : 100}%
-                      </Badge>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">System Health</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-300">Uptime</span>
+                        <Badge className="bg-green-500/20 text-green-400">99.9%</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-300">ZKP Success Rate</span>
+                        <Badge className="bg-blue-500/20 text-blue-400">
+                          {authLogs.filter(log => (log.auth_method === "zero_knowledge" || log.auth_method === "multi_factor_zkp") && log.success).length > 0 
+                            ? Math.round((authLogs.filter(log => (log.auth_method === "zero_knowledge" || log.auth_method === "multi_factor_zkp") && log.success).length / authLogs.filter(log => log.auth_method === "zero_knowledge" || log.auth_method === "multi_factor_zkp").length) * 100)
+                            : 100}%
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-300">Privacy Protected</span>
+                        <Badge className="bg-purple-500/20 text-purple-400">
+                          {authLogs.filter(log => log.privacy_preserved).length}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-300">ML Accuracy</span>
+                        <Badge className="bg-cyan-500/20 text-cyan-400">94.2%</Badge>
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-300">Privacy Protected</span>
-                      <Badge className="bg-purple-500/20 text-purple-400">
-                        {authLogs.filter(log => log.privacy_preserved).length}
-                      </Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-300">ML Accuracy</span>
-                      <Badge className="bg-cyan-500/20 text-cyan-400">94.2%</Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          )}
         </Tabs>
       </div>
 
