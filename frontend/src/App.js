@@ -535,7 +535,14 @@ function Dashboard({ user, onLogout }) {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-gray-800/40 backdrop-blur-sm border border-gray-700">
+          <TabsList className={`grid w-full bg-gray-800/40 backdrop-blur-sm border border-gray-700 ${
+            `grid-cols-${2 + 
+              (hasPermission('canManageDevices') ? 1 : 0) + 
+              (hasPermission('canViewMLInsights') ? 1 : 0) + 
+              (hasPermission('canViewSecurity') ? 1 : 0) + 
+              (hasPermission('canViewAnalytics') ? 1 : 0)
+            }`
+          }`}>
             <TabsTrigger value="overview" className="data-[state=active]:bg-gray-700">Overview</TabsTrigger>
             {hasPermission('canManageDevices') && (
               <TabsTrigger value="devices" className="data-[state=active]:bg-gray-700">Devices</TabsTrigger>
