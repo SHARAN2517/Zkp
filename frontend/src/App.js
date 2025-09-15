@@ -846,82 +846,84 @@ function Dashboard({ user, onLogout }) {
             </TabsContent>
           )}
 
-          {/* ML Insights Tab */}
-          <TabsContent value="ml-insights" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Comprehensive ML Insights */}
-              <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-white">
-                    <Brain className="h-5 w-5 mr-2 text-blue-400" />
-                    AI Security Insights
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {mlInsights.map((insight, index) => (
-                      <div key={index} className="p-4 bg-gray-700/30 rounded-lg">
-                        <div className="flex items-center justify-between mb-3">
-                          <Badge className={
-                            insight.insight_type === 'threat' ? 'bg-red-500/20 text-red-400' :
-                            insight.insight_type === 'anomaly' ? 'bg-orange-500/20 text-orange-400' :
-                            insight.insight_type === 'risk' ? 'bg-yellow-500/20 text-yellow-400' :
-                            'bg-blue-500/20 text-blue-400'
-                          }>
-                            {insight.insight_type.toUpperCase()}
-                          </Badge>
-                          <span className="text-xs text-gray-400">
-                            {Math.round(insight.confidence * 100)}% confidence
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-300 mb-3">{insight.description}</p>
-                        <div className="space-y-1">
-                          <p className="text-xs text-gray-400 font-medium">Recommendations:</p>
-                          {insight.recommendations.map((rec, recIndex) => (
-                            <p key={recIndex} className="text-xs text-gray-400">• {rec}</p>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Threat Predictions Detail */}
-              {canAccessFeature(['admin', 'security_analyst']) && (
+          {/* ML Insights Tab - Admin and Security Analyst only */}
+          {hasPermission('canViewMLInsights') && (
+            <TabsContent value="ml-insights" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Comprehensive ML Insights */}
                 <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
                   <CardHeader>
                     <CardTitle className="flex items-center text-white">
-                      <Zap className="h-5 w-5 mr-2 text-red-400" />
-                      Advanced Threat Predictions
+                      <Brain className="h-5 w-5 mr-2 text-blue-400" />
+                      AI Security Insights
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {threatPredictions.map((threat) => (
-                        <div key={threat.id} className="p-4 bg-gray-700/30 rounded-lg">
+                      {mlInsights.map((insight, index) => (
+                        <div key={index} className="p-4 bg-gray-700/30 rounded-lg">
                           <div className="flex items-center justify-between mb-3">
-                            <Badge className={getThreatLevelColor(threat.severity)}>
-                              {threat.severity}
+                            <Badge className={
+                              insight.insight_type === 'threat' ? 'bg-red-500/20 text-red-400' :
+                              insight.insight_type === 'anomaly' ? 'bg-orange-500/20 text-orange-400' :
+                              insight.insight_type === 'risk' ? 'bg-yellow-500/20 text-yellow-400' :
+                              'bg-blue-500/20 text-blue-400'
+                            }>
+                              {insight.insight_type.toUpperCase()}
                             </Badge>
                             <span className="text-xs text-gray-400">
-                              {Math.round(threat.probability * 100)}% probability
+                              {Math.round(insight.confidence * 100)}% confidence
                             </span>
                           </div>
-                          <h4 className="font-medium text-white mb-2">{threat.threat_type}</h4>
-                          <p className="text-sm text-gray-300 mb-2">{threat.description}</p>
-                          <div className="border-t border-gray-600 pt-2">
-                            <p className="text-xs text-gray-400 font-medium">Recommended Action:</p>
-                            <p className="text-xs text-gray-400">{threat.recommended_action}</p>
+                          <p className="text-sm text-gray-300 mb-3">{insight.description}</p>
+                          <div className="space-y-1">
+                            <p className="text-xs text-gray-400 font-medium">Recommendations:</p>
+                            {insight.recommendations.map((rec, recIndex) => (
+                              <p key={recIndex} className="text-xs text-gray-400">• {rec}</p>
+                            ))}
                           </div>
                         </div>
                       ))}
                     </div>
                   </CardContent>
                 </Card>
-              )}
-            </div>
-          </TabsContent>
+
+                {/* Threat Predictions Detail */}
+                {hasPermission('canViewThreatPredictions') && (
+                  <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-white">
+                        <Zap className="h-5 w-5 mr-2 text-red-400" />
+                        Advanced Threat Predictions
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {threatPredictions.map((threat) => (
+                          <div key={threat.id} className="p-4 bg-gray-700/30 rounded-lg">
+                            <div className="flex items-center justify-between mb-3">
+                              <Badge className={getThreatLevelColor(threat.severity)}>
+                                {threat.severity}
+                              </Badge>
+                              <span className="text-xs text-gray-400">
+                                {Math.round(threat.probability * 100)}% probability
+                              </span>
+                            </div>
+                            <h4 className="font-medium text-white mb-2">{threat.threat_type}</h4>
+                            <p className="text-sm text-gray-300 mb-2">{threat.description}</p>
+                            <div className="border-t border-gray-600 pt-2">
+                              <p className="text-xs text-gray-400 font-medium">Recommended Action:</p>
+                              <p className="text-xs text-gray-400">{threat.recommended_action}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </TabsContent>
+          )}
 
           {/* ZKP Authentication Tab */}
           <TabsContent value="zkp" className="space-y-6">
