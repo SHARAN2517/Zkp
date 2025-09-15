@@ -44,12 +44,17 @@ class AshCodexZKPAPITester:
                 response = requests.delete(url, headers=headers, timeout=10)
 
             success = response.status_code == expected_status
-            return success, response.json() if response.content else {}, response.status_code
+            
+            # Try to parse JSON response
+            try:
+                response_data = response.json() if response.content else {}
+            except json.JSONDecodeError:
+                response_data = {"error": f"Invalid JSON response: {response.text[:200]}"}
+            
+            return success, response_data, response.status_code
 
         except requests.exceptions.RequestException as e:
             return False, {"error": str(e)}, 0
-        except json.JSONDecodeError:
-            return False, {"error": "Invalid JSON response"}, response.status_code
 
     def generate_zkp_proof(self, username, secret):
         """Generate ZKP proof for testing"""
