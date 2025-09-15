@@ -553,35 +553,71 @@ function Dashboard({ user, onLogout }) {
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* ML Insights Overview */}
-              <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-white">
-                    <Brain className="h-5 w-5 mr-2 text-blue-400" />
-                    AI-Powered Insights
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {mlInsights.slice(0, 3).map((insight, index) => (
-                      <div key={index} className="p-3 bg-gray-700/30 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <Badge className="bg-blue-500/20 text-blue-400">
-                            {insight.insight_type}
-                          </Badge>
-                          <span className="text-xs text-gray-400">
-                            {Math.round(insight.confidence * 100)}% confidence
-                          </span>
+              {/* ML Insights Overview - Admin and Security Analyst only */}
+              {hasPermission('canViewMLInsights') && (
+                <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-white">
+                      <Brain className="h-5 w-5 mr-2 text-blue-400" />
+                      AI-Powered Insights
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {mlInsights.slice(0, 3).map((insight, index) => (
+                        <div key={index} className="p-3 bg-gray-700/30 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <Badge className="bg-blue-500/20 text-blue-400">
+                              {insight.insight_type}
+                            </Badge>
+                            <span className="text-xs text-gray-400">
+                              {Math.round(insight.confidence * 100)}% confidence
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-300">{insight.description}</p>
                         </div>
-                        <p className="text-sm text-gray-300">{insight.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
-              {/* Threat Predictions */}
-              {canAccessFeature(['admin', 'security_analyst']) && (
+              {/* Device Status Overview - Device Manager and Admin only */}
+              {hasPermission('canManageDevices') && (
+                <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-white">
+                      <Cpu className="h-5 w-5 mr-2 text-green-400" />
+                      Device Status Overview
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Online Devices</span>
+                        <Badge className="bg-green-500/20 text-green-400">
+                          {dashboardStats.online_devices || 0}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Total Registered</span>
+                        <Badge className="bg-blue-500/20 text-blue-400">
+                          {dashboardStats.total_devices || 0}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Auth Success Today</span>
+                        <Badge className="bg-cyan-500/20 text-cyan-400">
+                          {dashboardStats.successful_auths_today || 0}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Threat Predictions - Admin and Security Analyst only */}
+              {hasPermission('canViewThreatPredictions') && (
                 <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
                   <CardHeader>
                     <CardTitle className="flex items-center text-white">
@@ -609,6 +645,46 @@ function Dashboard({ user, onLogout }) {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Role-specific welcome message */}
+              <Card className="bg-gray-800/40 backdrop-blur-sm border border-gray-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-white">
+                    <User className="h-5 w-5 mr-2 text-cyan-400" />
+                    Welcome, {user.role.replace('_', ' ').toUpperCase()}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 text-sm text-gray-300">
+                    {user.role === 'admin' && (
+                      <>
+                        <p>• Full system administration access</p>
+                        <p>• Device management and registration</p>
+                        <p>• ML insights and threat predictions</p>
+                        <p>• Security monitoring and threat simulation</p>
+                        <p>• User management and analytics</p>
+                      </>
+                    )}
+                    {user.role === 'security_analyst' && (
+                      <>
+                        <p>• Security event monitoring and analysis</p>
+                        <p>• ML-powered threat predictions</p>
+                        <p>• Advanced security insights</p>
+                        <p>• Threat simulation capabilities</p>
+                        <p>• Analytics and reporting</p>
+                      </>
+                    )}
+                    {user.role === 'device_manager' && (
+                      <>
+                        <p>• IoT device registration and management</p>
+                        <p>• Device authentication and monitoring</p>
+                        <p>• ZKP authentication setup</p>
+                        <p>• Device status and health monitoring</p>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
