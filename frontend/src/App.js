@@ -688,157 +688,163 @@ function Dashboard({ user, onLogout }) {
             </div>
           </TabsContent>
 
-          {/* Device Management Tab */}
-          <TabsContent value="devices" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Device Registration Form */}
-              {canAccessFeature(['admin', 'device_manager']) && (
-                <Card className="lg:col-span-1 bg-gray-800/40 backdrop-blur-sm border border-gray-700">
+          {/* Device Management Tab - Admin and Device Manager only */}
+          {hasPermission('canManageDevices') && (
+            <TabsContent value="devices" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Device Registration Form */}
+                {hasPermission('canRegisterDevices') && (
+                  <Card className="lg:col-span-1 bg-gray-800/40 backdrop-blur-sm border border-gray-700">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-white">
+                        <Users className="h-5 w-5 mr-2" />
+                        Register New Device
+                      </CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Add a new IoT device with ZKP authentication
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <form onSubmit={registerDevice} className="space-y-4">
+                        <div>
+                          <Label htmlFor="device_name" className="text-gray-300">Device Name</Label>
+                          <Input
+                            id="device_name"
+                            value={newDevice.device_name}
+                            onChange={(e) => setNewDevice({...newDevice, device_name: e.target.value})}
+                            placeholder="Smart Thermostat"
+                            className="bg-gray-700 border-gray-600 text-white"
+                            required
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="device_type" className="text-gray-300">Device Type</Label>
+                          <Select 
+                            value={newDevice.device_type} 
+                            onValueChange={(value) => setNewDevice({...newDevice, device_type: value})}
+                          >
+                            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-700 border-gray-600">
+                              <SelectItem value="smart_home">Smart Home</SelectItem>
+                              <SelectItem value="healthcare">Healthcare</SelectItem>
+                              <SelectItem value="industrial">Industrial</SelectItem>
+                              <SelectItem value="wearable">Wearable</SelectItem>
+                              <SelectItem value="sensor">Sensor</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="manufacturer" className="text-gray-300">Manufacturer</Label>
+                          <Input
+                            id="manufacturer"
+                            value={newDevice.manufacturer}
+                            onChange={(e) => setNewDevice({...newDevice, manufacturer: e.target.value})}
+                            placeholder="TechCorp"
+                            className="bg-gray-700 border-gray-600 text-white"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="mac_address" className="text-gray-300">MAC Address</Label>
+                          <Input
+                            id="mac_address"
+                            value={newDevice.mac_address}
+                            onChange={(e) => setNewDevice({...newDevice, mac_address: e.target.value})}
+                            placeholder="AA:BB:CC:DD:EE:FF"
+                            className="bg-gray-700 border-gray-600 text-white"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="location" className="text-gray-300">Location</Label>
+                          <Input
+                            id="location"
+                            value={newDevice.location}
+                            onChange={(e) => setNewDevice({...newDevice, location: e.target.value})}
+                            placeholder="Living Room"
+                            className="bg-gray-700 border-gray-600 text-white"
+                            required
+                          />
+                        </div>
+
+                        <Button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-blue-500 to-cyan-500">
+                          {loading ? "Registering..." : "Register Device"}
+                        </Button>
+                      </form>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Device List */}
+                <Card className={`${hasPermission('canRegisterDevices') ? 'lg:col-span-2' : 'lg:col-span-3'} bg-gray-800/40 backdrop-blur-sm border border-gray-700`}>
                   <CardHeader>
-                    <CardTitle className="flex items-center text-white">
-                      <Users className="h-5 w-5 mr-2" />
-                      Register New Device
-                    </CardTitle>
+                    <CardTitle className="text-white">Registered Devices</CardTitle>
                     <CardDescription className="text-gray-400">
-                      Add a new IoT device with ZKP authentication
+                      {devices.length} devices with enhanced ML monitoring
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <form onSubmit={registerDevice} className="space-y-4">
-                      <div>
-                        <Label htmlFor="device_name" className="text-gray-300">Device Name</Label>
-                        <Input
-                          id="device_name"
-                          value={newDevice.device_name}
-                          onChange={(e) => setNewDevice({...newDevice, device_name: e.target.value})}
-                          placeholder="Smart Thermostat"
-                          className="bg-gray-700 border-gray-600 text-white"
-                          required
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor="device_type" className="text-gray-300">Device Type</Label>
-                        <Select 
-                          value={newDevice.device_type} 
-                          onValueChange={(value) => setNewDevice({...newDevice, device_type: value})}
-                        >
-                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-gray-700 border-gray-600">
-                            <SelectItem value="smart_home">Smart Home</SelectItem>
-                            <SelectItem value="healthcare">Healthcare</SelectItem>
-                            <SelectItem value="industrial">Industrial</SelectItem>
-                            <SelectItem value="wearable">Wearable</SelectItem>
-                            <SelectItem value="sensor">Sensor</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div>
-                        <Label htmlFor="manufacturer" className="text-gray-300">Manufacturer</Label>
-                        <Input
-                          id="manufacturer"
-                          value={newDevice.manufacturer}
-                          onChange={(e) => setNewDevice({...newDevice, manufacturer: e.target.value})}
-                          placeholder="TechCorp"
-                          className="bg-gray-700 border-gray-600 text-white"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="mac_address" className="text-gray-300">MAC Address</Label>
-                        <Input
-                          id="mac_address"
-                          value={newDevice.mac_address}
-                          onChange={(e) => setNewDevice({...newDevice, mac_address: e.target.value})}
-                          placeholder="AA:BB:CC:DD:EE:FF"
-                          className="bg-gray-700 border-gray-600 text-white"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="location" className="text-gray-300">Location</Label>
-                        <Input
-                          id="location"
-                          value={newDevice.location}
-                          onChange={(e) => setNewDevice({...newDevice, location: e.target.value})}
-                          placeholder="Living Room"
-                          className="bg-gray-700 border-gray-600 text-white"
-                          required
-                        />
-                      </div>
-
-                      <Button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-blue-500 to-cyan-500">
-                        {loading ? "Registering..." : "Register Device"}
-                      </Button>
-                    </form>
+                    <div className="space-y-4">
+                      {devices.map((device) => (
+                        <div key={device.id} className="flex items-center justify-between p-4 border border-gray-700 rounded-lg bg-gray-700/20">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h3 className="font-semibold text-white">{device.device_name}</h3>
+                              <Badge className={getStatusColor(device.status)}>
+                                {device.status}
+                              </Badge>
+                              {device.anomaly_score > 0.6 && (
+                                <Badge className="bg-red-500/20 text-red-400">
+                                  Anomaly Detected
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-300">{device.manufacturer} • {device.location}</p>
+                            <p className="text-xs text-gray-400">MAC: {device.mac_address}</p>
+                            <div className="flex space-x-4 mt-2 text-xs">
+                              <span className="text-gray-400">Risk: <span className="text-orange-400">{Math.round(device.risk_score * 100)}%</span></span>
+                              {user.role === 'admin' && (
+                                <>
+                                  <span className="text-gray-400">Anomaly: <span className="text-red-400">{Math.round(device.anomaly_score * 100)}%</span></span>
+                                  <span className="text-gray-400">Maintenance: <span className="text-yellow-400">{Math.round(device.maintenance_prediction * 100)}%</span></span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex space-x-2">
+                            <Button
+                              size="sm"
+                              onClick={() => authenticateDevice(device.id, "multi_factor_zkp")}
+                              disabled={loading}
+                              className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+                            >
+                              <Lock className="h-4 w-4 mr-1" />
+                              ZKP Auth
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => authenticateDevice(device.id, "traditional")}
+                              disabled={loading}
+                              className="border-gray-600 text-gray-400 hover:text-white"
+                            >
+                              Traditional
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
-              )}
-
-              {/* Device List */}
-              <Card className={`${canAccessFeature(['admin', 'device_manager']) ? 'lg:col-span-2' : 'lg:col-span-3'} bg-gray-800/40 backdrop-blur-sm border border-gray-700`}>
-                <CardHeader>
-                  <CardTitle className="text-white">Registered Devices</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    {devices.length} devices with enhanced ML monitoring
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {devices.map((device) => (
-                      <div key={device.id} className="flex items-center justify-between p-4 border border-gray-700 rounded-lg bg-gray-700/20">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <h3 className="font-semibold text-white">{device.device_name}</h3>
-                            <Badge className={getStatusColor(device.status)}>
-                              {device.status}
-                            </Badge>
-                            {device.anomaly_score > 0.6 && (
-                              <Badge className="bg-red-500/20 text-red-400">
-                                Anomaly Detected
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-sm text-gray-300">{device.manufacturer} • {device.location}</p>
-                          <p className="text-xs text-gray-400">MAC: {device.mac_address}</p>
-                          <div className="flex space-x-4 mt-2 text-xs">
-                            <span className="text-gray-400">Risk: <span className="text-orange-400">{Math.round(device.risk_score * 100)}%</span></span>
-                            <span className="text-gray-400">Anomaly: <span className="text-red-400">{Math.round(device.anomaly_score * 100)}%</span></span>
-                            <span className="text-gray-400">Maintenance: <span className="text-yellow-400">{Math.round(device.maintenance_prediction * 100)}%</span></span>
-                          </div>
-                        </div>
-                        <div className="flex space-x-2">
-                          <Button
-                            size="sm"
-                            onClick={() => authenticateDevice(device.id, "multi_factor_zkp")}
-                            disabled={loading}
-                            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
-                          >
-                            <Lock className="h-4 w-4 mr-1" />
-                            ZKP Auth
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => authenticateDevice(device.id, "traditional")}
-                            disabled={loading}
-                            className="border-gray-600 text-gray-400 hover:text-white"
-                          >
-                            Traditional
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+              </div>
+            </TabsContent>
+          )}
 
           {/* ML Insights Tab */}
           <TabsContent value="ml-insights" className="space-y-6">
