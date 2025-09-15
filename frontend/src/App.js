@@ -535,11 +535,19 @@ function Dashboard({ user, onLogout }) {
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-6 bg-gray-800/40 backdrop-blur-sm border border-gray-700">
             <TabsTrigger value="overview" className="data-[state=active]:bg-gray-700">Overview</TabsTrigger>
-            <TabsTrigger value="devices" className="data-[state=active]:bg-gray-700">Devices</TabsTrigger>
-            <TabsTrigger value="ml-insights" className="data-[state=active]:bg-gray-700">ML Insights</TabsTrigger>
+            {hasPermission('canManageDevices') && (
+              <TabsTrigger value="devices" className="data-[state=active]:bg-gray-700">Devices</TabsTrigger>
+            )}
+            {hasPermission('canViewMLInsights') && (
+              <TabsTrigger value="ml-insights" className="data-[state=active]:bg-gray-700">ML Insights</TabsTrigger>
+            )}
             <TabsTrigger value="zkp" className="data-[state=active]:bg-gray-700">ZKP Auth</TabsTrigger>
-            <TabsTrigger value="security" className="data-[state=active]:bg-gray-700">Security</TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-gray-700">Analytics</TabsTrigger>
+            {hasPermission('canViewSecurity') && (
+              <TabsTrigger value="security" className="data-[state=active]:bg-gray-700">Security</TabsTrigger>
+            )}
+            {hasPermission('canViewAnalytics') && (
+              <TabsTrigger value="analytics" className="data-[state=active]:bg-gray-700">Analytics</TabsTrigger>
+            )}
           </TabsList>
 
           {/* Overview Tab */}
